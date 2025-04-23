@@ -12,8 +12,8 @@ interface CategoryItem {
 }
 
 interface CategoryListProps {
-    categoryItems: CategoryItem[];
-    currentCategory: string;
+    categoryItems?: CategoryItem[]; // Made optional with ?
+    currentCategory?: string; // Made optional with ?
 }
 
 // Dummy data for testing
@@ -48,9 +48,7 @@ const dummyItems: CategoryItem[] = [
     }
 ];
 
-
-
-const CategoryList: React.FC<CategoryListProps> = ({ categoryItems = dummyItems }) => {
+const CategoryList = async ({ categoryItems = dummyItems }) => {
     const [searchTerm, setSearchTerm] = React.useState('');
 
     // Get current category from URL path
