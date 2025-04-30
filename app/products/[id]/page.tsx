@@ -20,7 +20,9 @@ async function getProduct(id: string): Promise<Product | null> {
         plan: "Premium",
         affiliateLink: "https://example.com",
         price: 2000,
-        commission: 10
+        commission: 10,
+        isLatest: false,
+        isFeatured: false
     }
     return product
 }
@@ -43,8 +45,7 @@ export default async function SingleProductPage({ params }: SingleProductPagePro
                     <li>
                         <div className="flex items-center">
                             <span className="mx-2">/</span>
-                            <a href="/products" className="hover:text-teal-600">Products</a>
-                        </div>
+                            <a href={`/categories/${product.category}`} className="hover:text-teal-600">{product.category}</a>                        </div>
                     </li>
                     <li>
                         <div className="flex items-center">

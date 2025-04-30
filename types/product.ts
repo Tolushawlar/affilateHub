@@ -9,5 +9,7 @@ export type Product = {
   category: string
   plan: string
   affiliateLink: string
-  commission: number
+  commission: number,
+  isLatest: boolean;
+  isFeatured: boolean;
 }

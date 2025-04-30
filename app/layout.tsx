@@ -11,6 +11,7 @@ import "@fontsource/tomorrow/400.css";
 import "@fontsource/tomorrow/500.css";
 import "@fontsource/lato";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -35,6 +36,7 @@ export default function RootLayout({
       <body className={`${rubik.variable} antialiased`}>
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

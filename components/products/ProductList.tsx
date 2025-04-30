@@ -23,7 +23,9 @@ export function ProductList({ filters, searchQuery, sortBy, page, onEmpty }: Pro
           category: 'ecommerceRetail',
           plan: 'Standard',
           affiliateLink: 'https://affiliate.com/product1',
-          commission: 10
+          commission: 10,
+          isLatest: false,
+          isFeatured: false
         },
         {
           id: '2',
@@ -35,7 +37,9 @@ export function ProductList({ filters, searchQuery, sortBy, page, onEmpty }: Pro
           category: 'HealthWellness',
           plan: 'Premium',
           affiliateLink: 'https://affiliate.com/product2',
-          commission: 15
+          commission: 15,
+          isLatest: false,
+          isFeatured: false
         },
         {
           id: '3',
@@ -47,7 +51,9 @@ export function ProductList({ filters, searchQuery, sortBy, page, onEmpty }: Pro
           category: 'ecommerceRetail',
           plan: 'Premium',
           affiliateLink: 'https://affiliate.com/earbuds-pro',
-          commission: 20
+          commission: 20,
+          isLatest: false,
+          isFeatured: false
         },
         {
           id: '4',
@@ -59,7 +65,9 @@ export function ProductList({ filters, searchQuery, sortBy, page, onEmpty }: Pro
           category: 'EducationOnline',
           plan: 'Premium',
           affiliateLink: 'https://affiliate.com/fitness-watch',
-          commission: 25
+          commission: 25,
+          isLatest: false,
+          isFeatured: false
         },
         {
           id: '5',
@@ -71,7 +79,9 @@ export function ProductList({ filters, searchQuery, sortBy, page, onEmpty }: Pro
           category: 'BussinessFinance',
           plan: 'Standard',
           affiliateLink: 'https://affiliate.com/powerbank',
-          commission: 12
+          commission: 12,
+          isLatest: false,
+          isFeatured: false
         },
         {
           id: '6',
@@ -83,7 +93,9 @@ export function ProductList({ filters, searchQuery, sortBy, page, onEmpty }: Pro
           category: 'Audio',
           plan: 'Standard',
           affiliateLink: 'https://affiliate.com/bluetooth-speaker',
-          commission: 15
+          commission: 15,
+          isLatest: false,
+          isFeatured: false
         },
         // {
         //   id: '7',

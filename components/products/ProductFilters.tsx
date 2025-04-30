@@ -1,49 +1,58 @@
-
-import { FC } from 'react'
+import { FC, useState, useCallback } from 'react';
 
 interface FilterOption {
-    label: string
-    value: string
+    label: string;
+    value: string;
 }
 
 interface ProductFiltersProps {
     filters: {
         [key: string]: string[]
-    }
-    onChange: (filters: { [key: string]: string[] }) => void
+    };
+    onChange: (filters: { [key: string]: string[] }) => void;
 }
 
 export const ProductFilters: FC<ProductFiltersProps> = ({ filters, onChange }) => {
     const categories: FilterOption[] = [
-        { label: ' Lastest Programs', value: 'lastest' },
-        { label: ' Featured', value: 'featured' },
-        { label: ' E-commerce & Retail', value: 'ecommerceRetail' },
+        { label: 'Lastest Affiliates', value: 'lastest' },
+        { label: 'Featured Affiliates', value: 'featured' },
+        { label: 'E-commerce & Retail', value: 'ecommerceRetail' },
         { label: 'Tech & Software', value: 'techSoftware' },
         { label: 'Business & Finance', value: 'BussinessFinance' },
         { label: ' Health & Wellness', value: 'HealthWellness' },
         { label: ' Travel & Lifestyle', value: 'TravelLifestyle' },
         { label: ' Education & Online Learning', value: 'EducationOnline' },
         { label: '  Real Estate & Home Services', value: 'realEstate' }
-    ]
+    ];
 
-    const handleFilterChange = (filterType: string, value: string) => {
-        const currentFilters = filters[filterType] || []
-        const newFilters = currentFilters.includes(value)
-            ? currentFilters.filter(item => item !== value)
-            : [...currentFilters, value]
-
+    const handleCategoryFilterChange = useCallback((value: string) => {
         onChange({
             ...filters,
-            [filterType]: newFilters
-        })
-    }
+            category: filters.category?.includes(value)
+                ? filters.category.filter(item => item !== value)
+                : [...(filters.category || []), value],
+            featured: [], // Clear featured filter
+            lastest: []    // Clear latest filter
+        });
+    }, [filters, onChange]);
 
-    const handleAllCategories = () => {
+    const handleUniqueFilterChange = useCallback((filterType: 'featured' | 'lastest', value: string) => {
         onChange({
             ...filters,
-            category: []
-        })
-    }
+            category: [], // Clear category filters
+            featured: filterType === 'featured' ? [value] : [],
+            lastest: filterType === 'lastest' ? [value] : []
+        });
+    }, [filters, onChange]);
+
+    const handleAllCategories = useCallback(() => {
+        onChange({
+            ...filters,
+            category: [],
+            featured: [],
+            lastest: []
+        });
+    }, [filters, onChange]);
 
     return (
         <div className=" p-4 rounded-lg shadow">
@@ -65,24 +74,43 @@ export const ProductFilters: FC<ProductFiltersProps> = ({ filters, onChange }) =
                 >
                     <button
                         onClick={handleAllCategories}
-                        className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                            !filters.category?.length
+                        className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${!filters.category?.length && !filters.featured?.length && !filters.lastest?.length
                                 ? 'bg-teal-500 text-white'
                                 : 'bg-teal-100 text-teal-700 hover:bg-teal-200'
-                        }`}
+                            }`}
                     >
                         All Categories
+                    </button>
+                    <button
+                        key="lastest"
+                        onClick={() => handleUniqueFilterChange('lastest', 'lastest')}
+                        className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${filters.lastest?.includes('lastest')
+                            ? 'bg-teal-500 text-white'
+                            : 'bg-teal-100 text-teal-700 hover:bg-teal-200'
+                            }`}
+                    >
+                        Lastest Affiliates
+                    </button>
+                    <button
+                        key="featured"
+                        onClick={() => handleUniqueFilterChange('featured', 'featured')}
+                        className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${filters.featured?.includes('featured')
+                            ? 'bg-teal-500 text-white'
+                            : 'bg-teal-100 text-teal-700 hover:bg-teal-200'
+                            }`}
+                    >
+                        Featured Affiliates
                     </button>
                     {categories.map(category => (
                         <button
                             key={category.value}
-                            onClick={() => handleFilterChange('category', category.value)}
+                            onClick={() => handleCategoryFilterChange(category.value)}
                             className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${filters.category?.includes(category.value)
-                                    ? 'bg-teal-500 text-white'
-                                    : 'bg-teal-100 text-teal-700 hover:bg-teal-200'
+                                ? 'bg-teal-500 text-white'
+                                : 'bg-teal-100 text-teal-700 hover:bg-teal-200'
                                 }`}
                         >
-                            {category.label}
+                            {category.label.replace(' Lastest Affiliates', '').replace(' Featured Affiliates', '')}
                         </button>
                     ))}
                 </div>
@@ -96,5 +124,6 @@ export const ProductFilters: FC<ProductFiltersProps> = ({ filters, onChange }) =
                     </svg>
                 </button>
             </div>
-        </div>)
-}
+        </div>
+    );
+};

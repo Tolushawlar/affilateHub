@@ -66,17 +66,23 @@ const CategoryList = async ({ categoryItems = dummyItems }) => {
 
     return (
         <div className="max-w-7xl mx-auto p-5">
-            {/* Breadcrumb navigation */}
-            <nav aria-label="breadcrumb" className=" mt-20">
-                <ol className="flex">
-                    <li className="mr-2">
-                        <a href="/" className="text-blue-600 hover:text-blue-800">Home</a>
+            {/* Breadcrumb */}
+            <nav className="flex mb-8 mt-20 text-gray-600" aria-label="Breadcrumb">
+                <ol className="inline-flex items-center space-x-1 md:space-x-3">
+                    <li className="inline-flex items-center">
+                        <a href="/" className="hover:text-teal-600">Home</a>
                     </li>
-                    <li className="mr-2">
-                        <a href="/categories" className=" before:content-['/'] before:mx-2 text-blue-600 hover:text-blue-800">Categories</a>
+                    <li>
+                        <div className="flex items-center">
+                            <span className="mx-2">/</span>
+                            <a href="/categories" className="hover:text-teal-600">Categories</a>
+                        </div>
                     </li>
-                    <li className="before:content-['/'] before:mx-2" aria-current="page">
-                        {currentCategory}
+                    <li>
+                        <div className="flex items-center">
+                            <span className="mx-2">/</span>
+                            <span className="text-gray-400">{currentCategory}</span>
+                        </div>
                     </li>
                 </ol>
             </nav>
