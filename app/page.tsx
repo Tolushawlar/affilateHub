@@ -334,7 +334,7 @@ export default function Home() {
           </aside>
 
           {/* Category Items Grid */}
-          <main className="flex-1">
+           <main className="flex-1">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {filteredCategoryItems.map(item => (
                 <div key={item.id} className="bg-white rounded-xl p-6 shadow-sm">
