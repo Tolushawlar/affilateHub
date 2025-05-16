@@ -1,6 +1,7 @@
 // app/products/[id]/page.tsx
 import { notFound } from 'next/navigation'
 import { Product } from "../../../types/product"
+import RatingForm from '../../../components/products/RatingForm'
 
 interface SingleProductPageProps {
     params: {
@@ -37,7 +38,7 @@ export default async function SingleProductPage({ params }: SingleProductPagePro
     return (
         <div className="container mx-auto px-4 py-8">
             {/* Breadcrumb */}
-            <nav className="flex mb-8 mt-12 text-gray-600" aria-label="Breadcrumb">
+            <nav className="flex my-20 text-gray-600" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-3">
                     <li className="inline-flex items-center">
                         <a href="/" className="hover:text-teal-600">Home</a>
@@ -120,9 +121,11 @@ export default async function SingleProductPage({ params }: SingleProductPagePro
                                 {product.description}
                             </p>
                         </div>
+                        <RatingForm productId={product.id} />
                     </div>
                 </div>
             </div>
+
 
             <div className="mt-12 max-w-6xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

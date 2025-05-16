@@ -1,18 +1,59 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import DashboardContent from '../../components/dashboard/DashboardContent'
+import { auth, currentUser } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import DashboardContent from '../../components/dashboard/DashboardContent';
 
-export const dynamic = 'force-dynamic'
+// Define a serializable user interface
+export interface SerializedUser {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  emailAddresses: {
+    id: string;
+    emailAddress: string;
+    verified: boolean;
+  }[];
+  imageUrl: string;
+  username: string | null;
+  app_metadata: any;
+  user_metadata: any;
+  aud: string;
+  created_at: string;
+}
+
+export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
-  const supabase = createServerComponentClient({ cookies })
-  
-  const { data: { session } } = await supabase.auth.getSession()
-  
-  if (!session) {
-    redirect('/login')
+  const { userId } = await auth();
+
+  if (!userId) {
+    redirect('/login');
   }
 
-  return <DashboardContent user={session.user} />
+  // Fetch the complete User object from Clerk
+  const user = await currentUser();
+
+  if (!user) {
+    console.error("Could not fetch user object from Clerk");
+    return <div>Error loading user data.</div>;
+  }
+
+  // Extract only the serializable properties
+  const serializedUser: SerializedUser = {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    emailAddresses: user.emailAddresses.map(email => ({
+      id: email.id,
+      emailAddress: email.emailAddress,
+      verified: email.verification?.status === "verified"
+    })),
+    imageUrl: user.imageUrl,
+    username: user.username,
+    app_metadata:  {},
+    user_metadata:  {},
+    aud:  '',
+    created_at: ''
+  };
+
+  return <DashboardContent user={serializedUser} />
 }

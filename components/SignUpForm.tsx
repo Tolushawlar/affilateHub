@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useSignUp } from "@clerk/nextjs"
 import { useRouter } from 'next/navigation'
 
 export default function SignUpForm() {
@@ -14,7 +14,7 @@ export default function SignUpForm() {
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState<string | null>(null)
     const router = useRouter()
-    const supabase = createClientComponentClient()
+    const { isLoaded, signUp } = useSignUp()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -30,6 +30,10 @@ export default function SignUpForm() {
         setMessage(null)
         setLoading(true)
 
+        if (!isLoaded) {
+            return
+        }
+
         // Validation
         if (formData.password !== formData.confirmPassword) {
             setError("Passwords don't match")
@@ -44,50 +48,29 @@ export default function SignUpForm() {
         }
 
         try {
-            console.log('Starting signup process...')
-
-            // 1. Sign up the user
-            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-                email: formData.email,
-                password: formData.password,
-                options: {
-                    data: {
-                        full_name: formData.fullName
-                    },
-                }
+            const result = await signUp.create({
+                username: formData.fullName.split(' ')[0],
+                emailAddress: formData.email,
+                password: formData.password
             })
 
-            console.log('Signup response:', { signUpData, signUpError })
-
-            if (signUpError) throw signUpError
-
-            if (signUpData.user) {
-                // 2. Insert into profiles table
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .insert([
-                        {
-                            id: signUpData.user.id,
-                            full_name: formData.fullName,
-                            email: formData.email,
-                        }
-                    ])
-
-                console.log('Profile creation response:', { profileError })
-
-                if (profileError) throw profileError
-
+            if (result.status === "complete") {
                 setMessage('Registration successful! Please check your email to verify your account.')
 
+                
                 // Optional: Redirect to login page after a delay
                 setTimeout(() => {
                     router.push('/login')
                 }, 3000)
+            } else {
+                // Send email verification link
+                await signUp.prepareEmailAddressVerification({ strategy: "email_code" })
+                setMessage('Please check your email for a verification code')
             }
 
         } catch (error: any) {
             console.error('Signup error:', error)
-            setError(error.message)
+            setError(error.message || "An error occurred during signup")
         } finally {
             setLoading(false)
         }
@@ -175,7 +158,7 @@ export default function SignUpForm() {
 
             <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !isLoaded}
                 className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
             >

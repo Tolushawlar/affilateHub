@@ -1,12 +1,25 @@
 "use client"
 import Link from "next/link";
 import { useState } from "react";
+import { useClerk, useUser } from "@clerk/nextjs";
 
 
 const Navbar = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { isSignedIn } = useUser();
+    const { signOut } = useClerk();
+
+    // Handle logout using Clerk
+    const handleLogout = async () => {
+        try {
+            await signOut();
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
+    };
+
     return (
         <>
             {/* Navbar */}
@@ -37,12 +50,31 @@ const Navbar = () => {
 
                         {/* Desktop menu */}
                         <div className="hidden md:flex md:items-center md:space-x-4">
-                            <Link href="/login" className="text-gray-800 hover:text-teal-600 px-3 py-2">
-                                Login
+                            <Link href="/blog" className="text-gray-800 hover:text-teal-600 px-3 py-2">
+                                Blog
                             </Link>
-                            <Link href="/signup" className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
-                                Sign Up
-                            </Link>
+                            {isSignedIn ? (
+                                <>
+                                    <Link href="/dashboard" className="text-gray-800 hover:text-teal-600 px-3 py-2">
+                                        Dashboard
+                                    </Link>
+                                    <button 
+                                        onClick={handleLogout}
+                                        className="text-gray-800 hover:text-teal-600 px-3 py-2"
+                                    >
+                                        Logout
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link href="/login" className="text-gray-800 hover:text-teal-600 px-3 py-2">
+                                        Login
+                                    </Link>
+                                    <Link href="/signup" className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
+                                        Sign Up
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -51,12 +83,31 @@ const Navbar = () => {
                 {isMenuOpen && (
                     <div className="md:hidden bg-white border-t">
                         <div className="px-2 pt-2 pb-3 space-y-1">
-                            <Link href="/login" className="block px-3 py-2 text-gray-800 hover:text-teal-600">
-                                Login
+                            <Link href="/blog" className="block px-3 py-2 text-gray-800 hover:text-teal-600">
+                                Blog
                             </Link>
-                            <Link href="/signup" className="block px-3 py-2 text-gray-800 hover:text-teal-600">
-                                Sign Up
-                            </Link>
+                            {isSignedIn ? (
+                                <>
+                                    <Link href="/dashboard" className="block px-3 py-2 text-gray-800 hover:text-teal-600">
+                                        Dashboard
+                                    </Link>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="block w-full text-left px-3 py-2 text-gray-800 hover:text-teal-600"
+                                    >
+                                        Logout
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link href="/login" className="block px-3 py-2 text-gray-800 hover:text-teal-600">
+                                        Login
+                                    </Link>
+                                    <Link href="/signup" className="block px-3 py-2 text-gray-800 hover:text-teal-600">
+                                        Sign Up
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 )}

@@ -11,6 +11,109 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { EmptyState } from '../components/common/EmptyState';
 import { useState, useEffect } from 'react';
 import { Product } from '../types/product';
+import { BlogPost } from '../types/blogpost';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation'
+
+
+const dummyBlogPosts: BlogPost[] = [
+  {
+    id: 1,
+    title: "Getting Started with React Hooks",
+    date: "2024-01-15",
+    author: {
+      name: "John Doe",
+      image: "https://picsum.photos/id/1/200/200",
+      bio: "Senior Frontend Developer"
+    },
+    content: "Lorem ipsum dolor sit amet...",
+    categories: ["React", "JavaScript"],
+    tags: ["hooks", "frontend", "web development"],
+    readingTime: "5 min read",
+    excerpt: "Learn how to use React Hooks effectively in your applications...",
+    featuredImage: "https://picsum.photos/id/2/800/400",
+    affiliateLinks: [
+      {
+        url: "https://example.com/react-course",
+        title: "Complete React Developer Course",
+        description: "Master React with this comprehensive course including Hooks, Redux and more",
+        price: "$89.99",
+        image: "https://picsum.photos/id/3/400/300"
+      },
+      {
+        url: "https://example.com/javascript-book",
+        title: "JavaScript: The Definitive Guide",
+        description: "The ultimate resource for JavaScript developers",
+        price: "$45.99",
+        image: "https://picsum.photos/id/4/400/300"
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: "Best Development Tools for 2024",
+    date: "2024-01-20",
+    author: {
+      name: "Jane Smith",
+      image: "https://picsum.photos/id/5/200/200",
+      bio: "DevOps Engineer"
+    },
+    content: "Discover the most essential development tools...",
+    categories: ["Tools", "Development"],
+    tags: ["productivity", "coding", "software"],
+    readingTime: "8 min read",
+    excerpt: "A curated list of must-have development tools to boost your productivity...",
+    featuredImage: "https://picsum.photos/id/6/800/400",
+    affiliateLinks: [
+      {
+        url: "https://example.com/vscode",
+        title: "VS Code Premium Extensions Pack",
+        description: "Collection of essential VS Code extensions for developers",
+        price: "$29.99",
+        image: "https://picsum.photos/id/7/400/300"
+      },
+      {
+        url: "https://example.com/github-pro",
+        title: "GitHub Pro Subscription",
+        description: "Advanced features for professional developers",
+        price: "$7.99/month",
+        image: "https://picsum.photos/id/8/400/300"
+      },
+      {
+        url: "https://example.com/terminal",
+        title: "Advanced Terminal Setup",
+        description: "Professional terminal configuration package",
+        price: "$19.99",
+        image: "https://picsum.photos/id/9/400/300"
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: "TypeScript Best Practices in 2024",
+    date: "2024-01-25",
+    author: {
+      name: "Sarah Johnson",
+      image: "https://picsum.photos/id/10/200/200",
+      bio: "TypeScript Expert"
+    },
+    content: "Essential TypeScript patterns and practices...",
+    categories: ["TypeScript", "JavaScript"],
+    tags: ["types", "patterns", "best practices"],
+    readingTime: "10 min read",
+    excerpt: "Learn the most effective TypeScript patterns and practices for clean, maintainable code...",
+    featuredImage: "https://picsum.photos/id/11/800/400",
+    affiliateLinks: [
+      {
+        url: "https://example.com/typescript-course",
+        title: "Advanced TypeScript Masterclass",
+        description: "Deep dive into TypeScript's advanced features",
+        price: "$79.99",
+        image: "https://picsum.photos/id/12/400/300"
+      }
+    ]
+  },
+];
 
 export default function Home() {
   const [filters, setFilters] = useState<{
@@ -24,6 +127,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const router = useRouter();
 
   const categoriesData = [
     { id: 'electronics', name: 'Electronics', value: 'ecommerceRetail' },
@@ -223,7 +327,7 @@ export default function Home() {
               <ProductSearch
                 value={searchQuery}
                 onChange={setSearchQuery}
-                // placeholder={searchQuery}
+              // placeholder={searchQuery}
               />
             </div>
           </div>
@@ -304,6 +408,57 @@ export default function Home() {
           </main>
         </div>
 
+        <div className="my-10">
+          <h1 className="text-xl font-semibold mb-4">Latest Blog Posts</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
+            {dummyBlogPosts.map((post, index) => (
+              <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div className="relative h-48">
+                  <Image
+                    src={post.featuredImage}
+                    alt={post.title}
+                    layout="fill"
+                    objectFit="cover"
+                    className="transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                      <Image
+                        src={post.author.image}
+                        alt={post.author.name}
+                        layout="fill"
+                        objectFit="cover"
+                      />
+                    </div>
+                    <div className="ml-4">
+                      <p className="text-teal-600 font-medium">{post.author.name}</p>
+                      <p className="text-gray-500 text-sm">{post.date}</p>
+                    </div>
+                  </div>
+                  <h2
+                    onClick={() => router.push(`/blog/${post.title.toLowerCase().replace(/\s+/g, '-')}-${post.id}`)} className="text-xl font-bold text-gray-800 mb-2 hover:text-teal-600 transition-colors cursor-pointer"
+                  >
+                    {post.title}
+                  </h2>
+                  <p className="text-gray-600 mb-4">{post.excerpt}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-teal-500 text-sm">{post.readingTime}</span>
+                    <div className="flex gap-2">
+                      {post.categories.map((category, idx) => (
+                        <span key={idx} className="bg-teal-50 text-teal-600 text-xs px-2 py-1 rounded">
+                          {category}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Categories Section */}
         <div className="flex flex-col lg:flex-row gap-8 mt-10">
           {/* Categories Column */}
@@ -334,7 +489,7 @@ export default function Home() {
           </aside>
 
           {/* Category Items Grid */}
-           <main className="flex-1">
+          <main className="flex-1">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {filteredCategoryItems.map(item => (
                 <div key={item.id} className="bg-white rounded-xl p-6 shadow-sm">

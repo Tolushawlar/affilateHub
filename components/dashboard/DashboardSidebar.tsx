@@ -3,12 +3,13 @@ type DashboardSidebarProps = {
   setCurrentView: (view: string) => void
 }
 
-export default function DashboardSidebar({ 
-  currentView, 
-  setCurrentView 
+export default function DashboardSidebar({
+  currentView,
+  setCurrentView
 }: DashboardSidebarProps) {
   const menuItems = [
     { id: 'overview', label: 'Account Overview', icon: '📊' },
+    { id: 'tools', label: 'Submit Tools', icon: '🛠️' },
     { id: 'activity', label: 'Activity Log', icon: '📝' },
     { id: 'settings', label: 'Settings', icon: '⚙️' },
   ]

@@ -12,6 +12,7 @@ import "@fontsource/tomorrow/500.css";
 import "@fontsource/lato";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -32,13 +33,15 @@ export default function RootLayout({
   const supabase = createServerComponentClient({ cookies })
 
   return (
-    <html lang="en">
-      <body className={`${rubik.variable} antialiased`}>
-        <Navbar />
-        {children}
-        <Footer />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${rubik.variable} antialiased`}>
+          <Navbar />
+          {children}
+          <Footer />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
 

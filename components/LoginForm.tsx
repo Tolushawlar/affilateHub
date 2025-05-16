@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from 'next/navigation'
 
 export default function LoginForm() {
@@ -11,7 +11,7 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const { signIn, isLoaded } = useSignIn();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -19,16 +19,17 @@ export default function LoginForm() {
     setLoading(true)
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
+      if (!isLoaded) return;
+
+      const result = await signIn.create({
+        identifier: formData.email,
         password: formData.password,
-      })
+      });
 
-      if (error) throw error
-
-      if (data.user) {
-        router.refresh() // Refresh the current route
-        router.push('/dashboard') // Redirect to dashboard
+      if (result.status === "complete") {
+        router.push('/dashboard')
+      } else {
+        throw new Error("Login failed")
       }
     } catch (error: any) {
       setError(error.message)
@@ -87,7 +88,7 @@ export default function LoginForm() {
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || !isLoaded}
         className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
           loading ? 'opacity-50 cursor-not-allowed' : ''
         }`}

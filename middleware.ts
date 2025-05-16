@@ -1,27 +1,34 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req, res })
-  const { data: { session } } = await supabase.auth.getSession()
+const routeMatchers = {
+  auth: createRouteMatcher(["/login", "/register"]),
+  protected: createRouteMatcher(["/dashboard/(.*)"])
+};
 
-  // If user is not signed in and trying to access protected route, redirect to login
-  if (!session && req.nextUrl.pathname.startsWith('/dashboard')) {
-    const redirectUrl = new URL('/login', req.url)
-    return NextResponse.redirect(redirectUrl)
+export default clerkMiddleware(async (auth, req) => {
+  const { auth: authRoutes, protected: protectedRoutes } = routeMatchers;
+  const { sessionClaims } = await auth();
+  const isAuthenticated = !!sessionClaims;
+
+  // Redirect unauthenticated users to login for protected routes
+  if (!isAuthenticated && protectedRoutes(req)) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // If user is signed in and trying to access login/signup, redirect to dashboard
-  if (session && (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/signup')) {
-    const redirectUrl = new URL('/dashboard', req.url)
-    return NextResponse.redirect(redirectUrl)
+  // Redirect authenticated users to dashboard if trying to access auth routes
+  if (isAuthenticated && authRoutes(req)) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  return res
-}
+  // Allow all other requests to proceed
+  return NextResponse.next();
+});
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/signup']
-}
+  matcher: [
+    // Match all routes except static files and Next.js internals
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+  ],
+};
